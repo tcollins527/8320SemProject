@@ -178,8 +178,19 @@ left_column, right_column = st.columns([0.25, 1])
 with left_column:
     st.subheader("Population Proportion Chart")
     category = st.selectbox("Select Category", ['layoff', 'sex', 'educlevel', 'marstatus', 'famincome'])
+    
+    # Calculate the total and filtered populations
+    total_population = df_main['propweight'].sum()
+    filtered_population = df_donut['propweight'].sum()
+    percentage_of_total = (filtered_population / total_population) * 100
+    
     if not df_donut.empty:
         fig = px.pie(df_donut, names=category, title=f'Proportional Representation of {category}', hole=0.5)
+        fig.update_layout(
+            annotations=[dict(text=f'{percentage of total:.2f}% of total', x=0.5, y=0.5, font_size=20, showarrow=False)],
+            uniformtext_minisize=15,
+            uniformtext_mode='hide'
+        )
         st.plotly_chart(fig, use_container_width=True)
     else:
         st.error("No data available for selected year and month.")
