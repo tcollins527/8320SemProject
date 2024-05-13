@@ -47,6 +47,7 @@ def save_data(df, year, month):
 
 def main():
     api_key = os.getenv("CENSUS_API_KEY")
+    print(f"API Key from env: {api_key}")
     if not api_key:
         raise ValueError("API Key is not set in the environment variables.")
     
