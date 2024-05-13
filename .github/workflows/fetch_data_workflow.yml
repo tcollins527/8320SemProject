@@ -1,0 +1,36 @@
+name: Fetch and Append Census Data
+
+on:
+  schedule:
+    - cron: '0 0 1 * *'
+
+jobs:
+  fetch-and-save-data:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+
+    - name: Install dependencies
+      run: |
+        pip install requests pandas
+
+    - name: Fetch and Append Data
+      env:
+        CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
+      run: |
+        python fetch_data.py
+
+    - name: Commit changes
+      run: |
+        git config --global user.name 'tcollins527'
+        git config --global user.email 'tylercollins727@gmail.com'
+        git add -A
+        git commit -m "Automatically update census data" || echo "No changes to commit"
+        git push
