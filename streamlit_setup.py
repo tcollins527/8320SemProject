@@ -175,7 +175,7 @@ def create_linegraph(df, year):
 
 ###################################
 # page layout
-left_column, right_column = st.columns([0.25, 1])
+left_column, right_column = st.columns([0.5, 1])
 
 # Left Column: donut chart and data disclaimer
 with left_column:
