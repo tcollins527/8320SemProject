@@ -188,7 +188,7 @@ with left_column:
         fig = px.pie(df_donut, names=category, title=f'Proportional Representation of {category}', hole=0.5)
         fig.update_layout(
             annotations=[dict(text=f'{percentage_of_total:.2f}% of total', x=0.5, y=0.5, font_size=20, showarrow=False)],
-            uniformtext_minsize=15
+            uniformtext_minsize=15,
             uniformtext_mode='hide'
         )
         st.plotly_chart(fig, use_container_width=True)
