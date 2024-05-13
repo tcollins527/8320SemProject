@@ -27,7 +27,7 @@ def fetch_census_data():
     first_of_this_month = today.replace(day=1)
     last_month = first_of_this_month - timedelta(days=1)
     year = last_month.year
-    month = last_month.strftime("%m")
+    month = last_month.strftime("%b").lower()
 
     url = f"{base_url}/{year}/cps/basic/{month}?get={','.join(vars)}&for=state:*&key=0cbe74e555fe4b3dac32591deacb7248f4dafae0"
 
