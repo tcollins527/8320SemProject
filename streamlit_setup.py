@@ -38,7 +38,8 @@ selected_famsize_range = st.sidebar.slider('Select Family Size Range',
                                             min_value=int(df_main['famsize'].min()), 
                                             max_value=int(df_main['famsize'].max()), 
                                             value=(int(df_main['famsize'].min()), int(df_main['famsize'].max())))
-
+###################################
+# still sidebar, donut chart logic
 # subheader on sidebar for time- & location-based filters for donut chart
 st.sidebar.subheader('Donut Chart Filters')
 donut_year = st.sidebar.selectbox('Select Year for Donut Chart', [None] + sorted(df_main['year'].unique().tolist()))
@@ -54,6 +55,13 @@ donut_region = st.sidebar.selectbox('Select Region', [None] + sorted(df_donut['r
 donut_state = st.sidebar.selectbox('Select State', [None] + sorted(df_donut[df_donut['region'] == donut_region]['state'].dropna().unique().tolist()) if donut_region else [])
 donut_city = st.sidebar.selectbox('Select City', [None] + sorted(df_donut[df_donut['state'] == donut_state]['city'].dropna().unique().tolist()) if donut_state else [])
 
+if donut_region:
+    df_donut = df_donut[df_donut['region'] == donut_region]
+if donut_state:
+    df_donut = df_donut[df_donut['state'] == donut_state]
+if donut_city:
+    df_donut = df_donut[df_donut['city'] == donut_city]
+    
 ###################################
 # add data filter function based on user selected demographic inputs
 def filter_data(df, year, layoff, sex, educlevel, marstatus, famincome, famtype, famsize_range):
