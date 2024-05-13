@@ -43,23 +43,25 @@ selected_famsize_range = st.sidebar.slider('Select Family Size Range',
 # subheader on sidebar for time- & location-based filters for donut chart
 st.sidebar.subheader('Donut Chart Filters')
 
-donut_year = st.sidebar.selectbox('Select Year for Donut Chart', [None] + sorted(df_main['year'].unique().tolist()))
-donut_month = st.sidebar.selectbox('Select Month for Donut Chart', [None] + months_order)
-
-donut_region = st.sidebar.selectbox('Select Region', [None] + sorted(df_donut['region'].dropna().unique().tolist()))
-donut_state = st.sidebar.selectbox('Select State', [None] + sorted(df_donut[df_donut['region'] == donut_region]['state'].dropna().unique().tolist()) if donut_region else [])
-donut_city = st.sidebar.selectbox('Select City', [None] + sorted(df_donut[df_donut['state'] == donut_state]['city'].dropna().unique().tolist()) if donut_state else [])
-
-# filter data based on sidebar additions
+# filter data based on user inputs to sort by time & location on donut sub-sidebar
 df_donut = df_main.copy()
+donut_year = st.sidebar.selectbox('Select Year for Donut Chart', [None] + sorted(df_main['year'].unique().tolist()))
 if donut_year:
     df_donut = df_donut[df_donut['year'] == donut_year]
+    
+donut_month = st.sidebar.selectbox('Select Month for Donut Chart', [None] + months_order)
 if donut_month:
     df_donut = df_donut[df_donut['month'] == donut_month]
+
+donut_region = st.sidebar.selectbox('Select Region', [None] + sorted(df_donut['region'].dropna().unique().tolist()))
 if donut_region:
     df_donut = df_donut[df_donut['region'] == donut_region]
+    
+donut_state = st.sidebar.selectbox('Select State', [None] + sorted(df_donut[df_donut['region'] == donut_region]['state'].dropna().unique().tolist()) if donut_region else [])
 if donut_state:
     df_donut = df_donut[df_donut['state'] == donut_state]
+    
+donut_city = st.sidebar.selectbox('Select City', [None] + sorted(df_donut[df_donut['state'] == donut_state]['city'].dropna().unique().tolist()) if donut_state else [])
 if donut_city:
     df_donut = df_donut[df_donut['city'] == donut_city]
     
