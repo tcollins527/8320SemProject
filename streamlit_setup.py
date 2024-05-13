@@ -13,7 +13,7 @@ st.set_page_config(
 
 ###################################
 # load & preprocess data
-df_main = pd.read_csv('/Users/tylercollins/Desktop/ToolsFP/Git/832SemProject/data/layoff_data.csv')
+df_main = pd.read_csv('data/layoff_data.csv')
 
 # order months to ensure line graph doesn't change its index
 months_order = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
