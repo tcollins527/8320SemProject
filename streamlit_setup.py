@@ -39,6 +39,10 @@ selected_famsize_range = st.sidebar.slider('Select Family Size Range',
                                             max_value=int(df_main['famsize'].max()), 
                                             value=(int(df_main['famsize'].min()), int(df_main['famsize'].max())))
 
+# subheader on sidebar for time-based filters for donut chart
+st.sidebar.subheader('Donut Chart Filters')
+donut_year = st.sidebar.selectbox('Select Year for Donut Chart', [None] + sorted(df_main['year'].unique().tolist()))
+donut_month = st.sidebar.selectbox('Select Month for Donut Chart', [None] + months_order)
 
 ###################################
 # add data filter function based on user selected demographic inputs
@@ -62,6 +66,12 @@ def filter_data(df, year, layoff, sex, educlevel, marstatus, famincome, famtype,
         min_size, max_size = famsize_range
         df = df[(df['famsize'] >= min_size) & (df['famsize'] <= max_size)]
     return df
+    
+# Filter data for donut chart based on selected month and year
+if donut_year and donut_month:
+    df_donut = df_main[(df_main['year'] == donut_year) & (df_main['month'] == donut_month)]
+else:
+    df_donut = df_main  # Or handle this case as needed, such as showing a default view or no data
 
 # create filtered dataframe given user selected filters
 filtered_df = filter_data(df_main, selected_year, selected_layoff, selected_sex, selected_educlevel,
@@ -153,10 +163,13 @@ left_column, right_column = st.columns([0.25, 1])
 
 # Left Column: donut chart and data disclaimer
 with left_column:
-    st.subheader("Donut Chart of Selected Category")
+    st.subheader("Population Proportion Chart")
     category = st.selectbox("Select Category", ['layoff', 'sex', 'educlevel', 'marstatus', 'famincome'])
-    fig = px.pie(df_main, names=category, title=f'Proportional Representation of {category}', hole=0.5)
-    st.plotly_chart(fig, use_container_width=True)
+    if not df_donut.empty:
+        fig = px.pie(df_donut, names=category, title=f'Proportional Representation of {category}', hole=0.5)
+        st.plotly_chart(fig, use_container_width=True)
+    else:
+        st.error("No data available for selected year and month.")
     
     st.write("Dataset Reservations:")
     st.markdown("""
