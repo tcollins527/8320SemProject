@@ -1,4 +1,3 @@
-import os
 import requests
 import pandas as pd
 from datetime import datetime, timedelta
@@ -36,7 +35,7 @@ def fetch_census_data():
     response.raise_for_status()
 
     data = response.json()
-    df = pd.Dataframe(data[1:], columns = data[0])
+    df = pd.DataFrame(data[1:], columns = data[0])
 
     return df
 
