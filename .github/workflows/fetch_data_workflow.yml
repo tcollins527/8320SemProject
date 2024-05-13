@@ -1,4 +1,4 @@
-name: Fetch and Append Census Data
+name: Fetch Data
 
 on:
   schedule:
@@ -18,15 +18,20 @@ jobs:
       with:
         python-version: '3.11.5'
 
+    - name: Check Python version
+      run: python --version  # This prints the Python version
+
     - name: Install dependencies
       run: |
         pip install requests pandas
 
-    - name: Fetch and Append Data
+    - name: Fetch Data
       env:
         CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
       run: |
         echo "API Key: $CENSUS_API_KEY"  # Debugging statement
+        printenv | grep CENSUS_API_KEY  # Debugging statement to print specific environment variable
+        mkdir -p data  # Create data directory if it doesn't exist
         python fetch_data.py
 
     - name: Commit changes
