@@ -13,7 +13,7 @@ st.set_page_config(
 
 ###################################
 # load & preprocess data
-df_main = pd.read_csv('/Users/tylercollins/Desktop/ToolsFP/Git/832SemProject/data/layoff_data.csv')
+df_main = pd.read_csv('data/layoff_data.csv')
 
 # order months to ensure line graph doesn't change its index
 months_order = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
@@ -38,8 +38,33 @@ selected_famsize_range = st.sidebar.slider('Select Family Size Range',
                                             min_value=int(df_main['famsize'].min()), 
                                             max_value=int(df_main['famsize'].max()), 
                                             value=(int(df_main['famsize'].min()), int(df_main['famsize'].max())))
+###################################
+# still sidebar, donut chart logic
+# subheader on sidebar for time- & location-based filters for donut chart
+st.sidebar.subheader('Donut Chart Filters')
 
+# filter data based on user inputs to sort by time & location on donut sub-sidebar
+df_donut = df_main.copy()
+donut_year = st.sidebar.selectbox('Select Year for Donut Chart', [None] + sorted(df_main['year'].unique().tolist()))
+if donut_year:
+    df_donut = df_donut[df_donut['year'] == donut_year]
+    
+donut_month = st.sidebar.selectbox('Select Month for Donut Chart', [None] + months_order)
+if donut_month:
+    df_donut = df_donut[df_donut['month'] == donut_month]
 
+donut_region = st.sidebar.selectbox('Select Region', [None] + sorted(df_donut['region'].dropna().unique().tolist()))
+if donut_region:
+    df_donut = df_donut[df_donut['region'] == donut_region]
+    
+donut_state = st.sidebar.selectbox('Select State', [None] + sorted(df_donut[df_donut['region'] == donut_region]['state'].dropna().unique().tolist()) if donut_region else [])
+if donut_state:
+    df_donut = df_donut[df_donut['state'] == donut_state]
+    
+donut_city = st.sidebar.selectbox('Select City', [None] + sorted(df_donut[df_donut['state'] == donut_state]['city'].dropna().unique().tolist()) if donut_state else [])
+if donut_city:
+    df_donut = df_donut[df_donut['city'] == donut_city]
+    
 ###################################
 # add data filter function based on user selected demographic inputs
 def filter_data(df, year, layoff, sex, educlevel, marstatus, famincome, famtype, famsize_range):
@@ -62,6 +87,7 @@ def filter_data(df, year, layoff, sex, educlevel, marstatus, famincome, famtype,
         min_size, max_size = famsize_range
         df = df[(df['famsize'] >= min_size) & (df['famsize'] <= max_size)]
     return df
+
 
 # create filtered dataframe given user selected filters
 filtered_df = filter_data(df_main, selected_year, selected_layoff, selected_sex, selected_educlevel,
@@ -149,14 +175,28 @@ def create_linegraph(df, year):
 
 ###################################
 # page layout
-left_column, right_column = st.columns([0.25, 1])
+left_column, right_column = st.columns([0.5, 1])
 
 # Left Column: donut chart and data disclaimer
 with left_column:
-    st.subheader("Donut Chart of Selected Category")
+    st.subheader("Population Proportion Chart")
     category = st.selectbox("Select Category", ['layoff', 'sex', 'educlevel', 'marstatus', 'famincome'])
-    fig = px.pie(df_main, names=category, title=f'Proportional Representation of {category}', hole=0.5)
-    st.plotly_chart(fig, use_container_width=True)
+    
+    # Calculate the total and filtered populations
+    total_population = df_main['propweight'].sum()
+    filtered_population = df_donut['propweight'].sum()
+    percentage_of_total = (filtered_population / total_population) * 100
+    
+    if not df_donut.empty:
+        fig = px.pie(df_donut, names=category, title=f'Proportional Representation of {category}', hole=0.5)
+        fig.update_layout(
+            annotations=[dict(text=f'{percentage_of_total:.2f}% of total', x=0.5, y=0.5, font_size=16, showarrow=False)],
+            uniformtext_minsize=15,
+            uniformtext_mode='hide'
+        )
+        st.plotly_chart(fig, use_container_width=True)
+    else:
+        st.error("No data available for selected year and month.")
     
     st.write("Dataset Reservations:")
     st.markdown("""
