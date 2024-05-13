@@ -2,18 +2,17 @@ name: Fetch Data
 
 on:
   schedule:
-    - cron: '0 0 1 * *'
+    - cron: '0 0 1 * *'  # Schedule to run at midnight on the first day of each month
   workflow_dispatch:
 
 permissions:
-  checks: write
   contents: write
   actions: read
 
 jobs:
   build:
-    name: data
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -29,18 +28,14 @@ jobs:
           pip install requests pandas
 
       - name: Fetch and Append Data
-        env:
-          CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
         run: |
-          echo "API Key from GitHub Secret: $CENSUS_API_KEY"  # Debugging statement
-          printenv | sort  # Print all environment variables for debugging
-          mkdir -p data  # Create data directory if it doesn't exist
+          echo "Fetching data..."
           python fetch_data.py
 
       - name: Commit changes
         run: |
           git config --global user.name 'tcollins527'
           git config --global user.email 'tylercollins727@gmail.com'
-          git add -A
+          git add data/cps_data_*.csv  # Add only the new data files
           git commit -m "Automatically update census data" || echo "No changes to commit"
           git push
