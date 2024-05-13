@@ -39,10 +39,20 @@ selected_famsize_range = st.sidebar.slider('Select Family Size Range',
                                             max_value=int(df_main['famsize'].max()), 
                                             value=(int(df_main['famsize'].min()), int(df_main['famsize'].max())))
 
-# subheader on sidebar for time-based filters for donut chart
+# subheader on sidebar for time- & location-based filters for donut chart
 st.sidebar.subheader('Donut Chart Filters')
 donut_year = st.sidebar.selectbox('Select Year for Donut Chart', [None] + sorted(df_main['year'].unique().tolist()))
 donut_month = st.sidebar.selectbox('Select Month for Donut Chart', [None] + months_order)
+
+# filter data for donut chart based on selected month and year -- separate from core dashboard filters
+if donut_year and donut_month:
+    df_donut = df_main[(df_main['year'] == donut_year) & (df_main['month'] == donut_month)]
+else:
+    df_donut = df_main
+
+donut_region = st.sidebar.selectbox('Select Region', [None] + sorted(df_donut['region'].dropna().unique().tolist()))
+donut_state = st.sidebar.selectbox('Select State', [None] + sorted(df_donut[df_donut['region'] == donut_region]['state'].dropna().unique().tolist()) if donut_region else [])
+donut_city = st.sidebar.selectbox('Select City', [None] + sorted(df_donut[df_donut['state'] == donut_state]['city'].dropna().unique().tolist()) if donut_state else [])
 
 ###################################
 # add data filter function based on user selected demographic inputs
@@ -66,12 +76,7 @@ def filter_data(df, year, layoff, sex, educlevel, marstatus, famincome, famtype,
         min_size, max_size = famsize_range
         df = df[(df['famsize'] >= min_size) & (df['famsize'] <= max_size)]
     return df
-    
-# Filter data for donut chart based on selected month and year
-if donut_year and donut_month:
-    df_donut = df_main[(df_main['year'] == donut_year) & (df_main['month'] == donut_month)]
-else:
-    df_donut = df_main  # Or handle this case as needed, such as showing a default view or no data
+
 
 # create filtered dataframe given user selected filters
 filtered_df = filter_data(df_main, selected_year, selected_layoff, selected_sex, selected_educlevel,
