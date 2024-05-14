@@ -180,7 +180,7 @@ left_column, right_column = st.columns([0.5, 1])
 # Left Column: donut chart and data disclaimer
 with left_column:
     st.subheader("Population Proportion Chart")
-    category = st.selectbox("Select Category", ['layoff', 'sex', 'educlevel', 'marstatus', 'famincome', 'race'])
+    category = st.selectbox("Select Category", ['layoff', 'sex', 'educlevel', 'marstatus', 'famincome'])
     
     # Calculate the total and filtered populations
     total_population = df_main['propweight'].sum()
